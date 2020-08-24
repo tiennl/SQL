@@ -1,4 +1,4 @@
-CREATE DATABASE NHANVIEN
+﻿CREATE DATABASE NHANVIEN
 
 USE NHANVIEN
 
@@ -111,3 +111,34 @@ INSERT INTO THANNHAN(MaNV, TenTN, Phai, NgaySinh, QuanHe) VALUES
 ('NV004', 'Le Thanh', 'Nam', '2010-04-21', 'Con'),
 ('NV005', 'Le Chi', 'Nu', '1960-10-25', 'Me')
 
+INSERT INTO DEAN(MaDA, TenDA, DiaDiemDA, MaPHG) VALUES 
+('DA001', 'He thong quan ly khach san', 'Son Tra', 'P001'),
+('DA002', 'He thong quan ly sinh vien', 'Hai Chau', 'P002'),
+('DA003', 'He thong quan ly nha hang', 'Lien Chieu', 'P003'),
+('DA004', 'Phan mem chuyen van ban thanh giong noi', 'Hoa Vang','P001'),
+('DA005', 'Phan mem tu dien Anh Viet', 'Thanh Khe','P002'),
+('DA006', 'Phan mem trac nghiem Tieng Anh', 'Cam Le','P002')
+
+INSERT INTO PHANCONG(MaNV, MaDA, ThoiGian) VALUES
+('NV001','DA001', 100),
+('NV002','DA002', 150),
+('NV003','DA003', 200),
+('NV004','DA001', 100),
+('NV007','DA005', 50),
+('NV008','DA005', 10),
+('NV010','DA006', 30)
+
+-- 4. Cho biết mã nhân viên có tham gia đề án hoặc có thân nhân
+(SELECT MaNV FROM PHANCONG)
+UNION
+(SELECT MaNV FROM THANNHAN)
+
+-- 5. Cho biết mã nhân viên có người thân và có tham gia đề án
+(SELECT MaNV FROM THANNHAN)
+INTERSECT 
+(SELECT MaNV FROM PHANCONG)
+
+-- 6. Cho biết mã nhân viên không có thân nhân nào
+(SELECT MaNV FROM NHANVIEN)
+EXCEPT 
+(SELECT MaNV FROM THANNHAN)
