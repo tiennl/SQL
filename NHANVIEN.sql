@@ -82,6 +82,8 @@ INSERT INTO NHANVIEN(MaNV, TenNV, HoNV, NgaySinh, DiaChi, Phai, Luong) VALUES
 ('NV003', 'Nhu', 'Le', '1980-07-20', 'Son Tra', 'Nu', 7000000)
 
 INSERT INTO PHONGBAN(MaPHG, TenPHG, NgNhanChuc, TruongPHG) VALUES 
+('P005', 'Dau tu', '2007-12-01', 'NV009'),
+('P004', 'Ke hoach', '2005-12-01', 'NV007'),
 ('P001', 'Nghien cuu', '2000-12-01', 'NV001'),
 ('P002', 'Dieu hanh', '2005-09-15', 'NV002'),
 ('P003', 'Quan ly', '2010-10-20', 'NV003')
@@ -100,6 +102,8 @@ INSERT INTO NHANVIEN(MaNV, TenNV, HoNV, NgaySinh, DiaChi, Phai, Luong, MaNQL, Ma
 ('NV010', 'Thu', 'Le', '1996-02-27', 'Hai Chau', 'Nu', 6500000, 'NV003', 'P003')
 
 INSERT INTO DIADIEMPHG VALUES
+('P004', 'Lien Chieu'),
+('P005', 'Lien Chieu'),
 ('P001', 'Lien Chieu'),
 ('P002', 'Hai Chau'),
 ('P003', 'Son Tra')
@@ -120,6 +124,12 @@ INSERT INTO DEAN(MaDA, TenDA, DiaDiemDA, MaPHG) VALUES
 ('DA006', 'Phan mem trac nghiem Tieng Anh', 'Cam Le','P002')
 
 INSERT INTO PHANCONG(MaNV, MaDA, ThoiGian) VALUES
+('NV001','DA003', 150),
+('NV001','DA004', 150),
+('NV004','DA004', 100),
+('NV001','DA005', 150),
+('NV001','DA006', 150),
+('NV001','DA002', 150),
 ('NV001','DA001', 100),
 ('NV002','DA002', 150),
 ('NV003','DA003', 200),
@@ -142,3 +152,51 @@ INTERSECT
 (SELECT MaNV FROM NHANVIEN)
 EXCEPT 
 (SELECT MaNV FROM THANNHAN)
+
+-- Cho biết họ tên của các nhân viên và lương của họ sau khi tăng 10%
+SELECT HoNV, TenNV, (Luong + Luong*10/100) AS LuongSauKhiTang
+FROM NHANVIEN
+
+-- 7. Cho biết họ và tên nhân viên làm việc ở phòng số 4
+SELECT HoNV, TenNV
+FROM NHANVIEN
+WHERE MaPHG = 'P004'
+
+-- 8. Với mỗi phòng ban, cho biết thông tin của người trưởng phòng
+SELECT PB.MaPHG, PB.TenPHG, PB.TruongPHG, NV.TenNV, NV.HoNV, NV.NgaySinh, NV.DiaChi, NV.Phai, NV.Luong
+FROM PHONGBAN PB JOIN NHANVIEN NV ON PB.TruongPHG = NV.MaNV
+
+-- 9. Cho biết lương cao nhất trong công ty
+SELECT TOP 1 Luong
+FROM NHANVIEN
+
+-- 10. Cho biết các phòng ban có cùng địa điểm với phòng số 5
+SELECT MaPHG
+FROM DIADIEMPHG
+WHERE (DiaDiem = (SELECT DiaDiem FROM DIADIEMPHG WHERE MaPHG = 'P005')) AND (MaPHG <> 'P005')
+
+-- 11. Cho biết nhân viên có lương hơn lương của nhân viên 'Tung'
+SELECT MaNV, Luong
+FROM NHANVIEN
+WHERE Luong > (SELECT Luong FROM NHANVIEN WHERE TenNV = 'Tung')
+
+-- 12. Với mỗi nhân viên, hãy cho biết thông tin của phòng ban mà họ đang làm việc
+SELECT NV.MaNV, NV.TenNV, NV.HoNV, PB.* 
+FROM NHANVIEN NV JOIN PHONGBAN PB ON NV.MaPHG = PB.MaPHG
+
+-- 13. Với mỗi phòng ban hãy cho biết các địa điểm của phòng ban đó
+SELECT PB.MaPHG, PB.TenPHG, DDP.DiaDiem
+FROM PHONGBAN PB JOIN DIADIEMPHG DDP ON PB.MaPHG = DDP.MaPHG
+
+-- 14. Cho biết mã nhân viên tham gia tất cả các đề án
+SELECT MaNV
+FROM PHANCONG
+GROUP BY MaNV
+HAVING COUNT(MaDA) = (SELECT COUNT(MaDA) FROM DEAN)
+
+-- 15. Cho biết mã nhân viên tham gia tất cả các đề án do phòng số 4 phụ trách
+SELECT PC.MaNV
+FROM PHANCONG PC JOIN DEAN DA ON PC.MaDA = DA.MaDA
+WHERE DA.MaPHG = 'P004'
+GROUP BY PC.MaNV
+HAVING COUNT(PC.MaNV) = (SELECT COUNT(MaDA) FROM DEAN GROUP BY MaPHG HAVING MaPHG = 'P004')
