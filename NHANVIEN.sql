@@ -120,6 +120,8 @@ INSERT INTO THANNHAN(MaNV, TenTN, Phai, NgaySinh, QuanHe) VALUES
 ('NV007', 'Ha', 'Nam', '1996-12-20', 'Anh')
 
 INSERT INTO DEAN(MaDA, TenDA, DiaDiemDA, MaPHG) VALUES 
+('DA009', 'San pham ABC', 'Nha Trang', 'P003'),
+('DA010', 'San pham TTTT', 'HCM', 'P004'),
 ('DA007', 'San pham YY', 'Ha Noi', 'P002'),
 ('DA008', 'San pham X', 'Ha Noi', 'P004'),
 ('DA001', 'He thong quan ly khach san', 'Son Tra', 'P001'),
@@ -335,28 +337,28 @@ FROM NHANVIEN NV JOIN PHANCONG PC ON NV.MaNV = PC.MaNV
 JOIN DEAN DA ON PC.MaDA = DA.MaDA
 
 -- 22. Cho biết họ tên các nhân viên và tuổi về hưu của họ (nam 60 tuổi, nữ 55 tuổi)
-
+SELECT (HoNV + ' ' + TenNV) AS HoTenNV, 
+(CASE Phai
+WHEN 'Nam' THEN '60'
+WHEN 'Nu' THEN '55'
+END) AS TuoiVeHuu
+FROM NHANVIEN
 
 -- 23. Cho biết họ tên các nhân viên và năm về hưu
-
+SELECT (HoNV + ' ' + TenNV) AS HoTenNV, 
+(CASE Phai
+WHEN 'Nam' THEN YEAR(NgaySinh)+60
+WHEN 'Nu' THEN YEAR(NgaySinh)+55
+END) AS NamVeHuu
+FROM NHANVIEN
 
 -- 24. Xóa đi những nhân viên ở phòng ‘Nghien cuu’
-
+DELETE FROM NHANVIEN WHERE MaNV IN
+(SELECT MaNV FROM NHANVIEN NV JOIN PHONGBAN PB ON NV.MaPHG = PB.MaPHG
+WHERE PB.TenPHG = 'Nghien cuu')
 
 -- 25. Với đề án có mã số 10, hãy thay đổi nơi thực hiện đề án thành ‘Vung Tau’ và phòng ban phụ trách là phòng 5
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+UPDATE DEAN 
+SET DiaDiemDA = 'Vung Tau', MaPHG = 'P005'
+WHERE MaDA = 'DA010'
 
