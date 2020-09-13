@@ -298,10 +298,10 @@ GROUP BY PB.MaPHG
 ORDER BY PB.MaPHG
 
 -- 15. Với mỗi nhân viên cho biết mã số, họ tên, số lượng đề án và tổng thời gian mà họ tham gia
-SELECT NV.MaNV, COUNT(PC.MaDA) AS SoDA, SUM(PC.ThoiGian) AS TongTG
+SELECT NV.MaNV, (NV.HoNV + ' ' + NV.TenNV) AS HoTenNV, COUNT(PC.MaDA) AS SoDA, SUM(PC.ThoiGian) AS TongTG
 FROM NHANVIEN NV JOIN PHANCONG PC ON NV.MaNV = PC.MaNV
 JOIN DEAN DA ON PC.MaDA = DA.MaDA
-GROUP BY NV.MaNV
+GROUP BY NV.MaNV, (NV.HoNV + ' ' + NV.TenNV)
 
 -- 16. Cho biết những nhân viên tham gia từ 2 đề án trở lên 
 SELECT MaNV
