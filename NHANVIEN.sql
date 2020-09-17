@@ -13,8 +13,6 @@ CREATE TABLE NHANVIEN
 	Luong BIGINT,
 	MaNQL VARCHAR(20),
 	MaPHG VARCHAR(20)
-	CONSTRAINT FK_NV_NV
-	FOREIGN KEY (MaNQL) REFERENCES NHANVIEN(MaNV)
 )
 
 CREATE TABLE PHONGBAN
@@ -26,9 +24,6 @@ CREATE TABLE PHONGBAN
 	CONSTRAINT FK_PB_NV
 	FOREIGN KEY (TruongPHG) REFERENCES NHANVIEN(MaNV)
 )
-
-ALTER TABLE NHANVIEN 
-ADD CONSTRAINT FK_NV_PB FOREIGN KEY (MaPHG) REFERENCES PHONGBAN(MaPHG)
 
 CREATE TABLE DIADIEMPHG
 (
@@ -67,7 +62,9 @@ CREATE TABLE PHANCONG
 (
 	MaNV VARCHAR(20) NOT NULL,
 	MaDA VARCHAR(20),
-	ThoiGian FLOAT
+	ThoiGian FLOAT,
+	ThoiGianBatDau DATE,
+	ThoiGianKetThuc DATE
 	CONSTRAINT PK_PC_NV_DA
 	PRIMARY KEY (MaNV, MaDA),
 	CONSTRAINT FK_PC_NV
@@ -76,40 +73,34 @@ CREATE TABLE PHANCONG
 	FOREIGN KEY (MaDA) REFERENCES DEAN(MaDA)
 )
 
-INSERT INTO NHANVIEN(MaNV, TenNV, HoNV, NgaySinh, DiaChi, Phai, Luong) VALUES
-('NV001', 'A', 'Nguyen', '1970-01-01', 'Hai Chau', 'Nam', 9000000),
-('NV002', 'Tung', 'Nguyen', '1975-05-10', 'Lien Chieu', 'Nam', 8000000),
-('NV003', 'Nhu', 'Le', '1980-07-20', 'Son Tra', 'Nu', 7000000)
-
-INSERT INTO PHONGBAN(MaPHG, TenPHG, NgNhanChuc, TruongPHG) VALUES 
-('P005', 'Dau tu', '2007-12-01', 'NV009'),
-('P004', 'Ke hoach', '2005-12-01', 'NV007'),
-('P001', 'Nghien cuu', '2000-12-01', 'NV001'),
-('P002', 'Dieu hanh', '2005-09-15', 'NV002'),
-('P003', 'Quan ly', '2010-10-20', 'NV003')
-
-UPDATE NHANVIEN SET MaPHG = 'P001' WHERE MaNV = 'NV001'
-UPDATE NHANVIEN SET MaPHG = 'P002' WHERE MaNV = 'NV002'
-UPDATE NHANVIEN SET MaPHG = 'P003' WHERE MaNV = 'NV003'
-
 INSERT INTO NHANVIEN(MaNV, TenNV, HoNV, NgaySinh, DiaChi, Phai, Luong, MaNQL, MaPHG) VALUES
-('NV013', 'Thanh', 'Le', '1899-07-25', 'Son Tra', 'Nam', 4500000, 'NV003', 'P004'),
-('NV011', 'An', 'Tran', '1896-07-25', 'Son Tra', 'Nam', 5500000, 'NV001', 'P005'),
-('NV012', 'Hanh', 'Vo', '1890-07-25', 'Lien Chieu', 'Nu', 5800000, 'NV002', 'P004'),
-('NV004', 'Khanh', 'Le', '1880-07-25', 'Lien Chieu', 'Nam', 5000000, 'NV001', 'P001'),
+('NV001', 'A', 'Nguyen', '1970-01-01', 'Da Nang', 'Nam', 9000000, 'NV002', 'P001'),
+('NV002', 'Tung', 'Nguyen', '1975-05-10', 'Lien Chieu', 'Nam', 8000000, 'NV005', 'P002'),
+('NV003', 'Nhu', 'Le', '1980-07-20', 'Son Tra', 'Nu', 7000000, 'NV004', 'P003'),
+('NV004', 'Khanh', 'Le', '1880-07-25', 'Da Nang', 'Nu', 5000000, 'NV001', 'P001'),
 ('NV005', 'Anh', 'Nguyen', '1990-10-10', 'Cam Le', 'Nu', 4500000, 'NV001', 'P001'),
 ('NV006', 'Uyen', 'Pham', '1991-09-20', 'Lien Chieu', 'Nu', 700000, 'NV002', 'P002'),
 ('NV007', 'Ha', 'Le', '1996-12-20', 'Hai Chau', 'Nam', 6500000, 'NV002', 'P002'),
 ('NV008', 'My', 'Tran', '1995-07-22', 'Hoa Vang', 'Nu', 7500000, 'NV003', 'P003'),
 ('NV009', 'Son', 'Nguyen', '1992-08-20', 'Lien Chieu', 'Nam', 6000000, 'NV003', 'P003'),
-('NV010', 'Thu', 'Le', '1996-02-27', 'Hai Chau', 'Nu', 6500000, 'NV003', 'P003')
+('NV010', 'Thu', 'Le', '1996-02-27', 'Da Nang', 'Nu', 6500000, 'NV003', 'P003'),
+('NV011', 'An', 'Tran', '1896-07-25', 'Son Tra', 'Nam', 5500000, 'NV001', 'P005'),
+('NV012', 'Hanh', 'Vo', '1890-07-25', 'Lien Chieu', 'Nu', 5800000, 'NV002', 'P004'),
+('NV013', 'Thanh', 'Le', '1899-07-25', 'Son Tra', 'Nam', 4500000, 'NV003', 'P004')
+
+INSERT INTO PHONGBAN(MaPHG, TenPHG, NgNhanChuc, TruongPHG) VALUES 
+('P001', 'Nghien cuu', '2000-12-01', 'NV001'),
+('P002', 'Dieu hanh', '2005-09-15', 'NV002'),
+('P003', 'Quan ly', '2010-10-20', 'NV003'),
+('P005', 'Dau tu', '2007-12-01', 'NV009'),
+('P004', 'Ke hoach', '2005-12-01', 'NV007')
 
 INSERT INTO DIADIEMPHG VALUES
-('P004', 'Lien Chieu'),
-('P005', 'Lien Chieu'),
 ('P001', 'Lien Chieu'),
 ('P002', 'Hai Chau'),
-('P003', 'Son Tra')
+('P003', 'Son Tra'),
+('P004', 'Lien Chieu'),
+('P005', 'Lien Chieu')
 
 INSERT INTO THANNHAN(MaNV, TenTN, Phai, NgaySinh, QuanHe) VALUES
 ('NV001', 'Son', 'Nam', '2000-10-21', 'Con'),
@@ -120,35 +111,43 @@ INSERT INTO THANNHAN(MaNV, TenTN, Phai, NgaySinh, QuanHe) VALUES
 ('NV007', 'Ha', 'Nam', '1996-12-20', 'Anh')
 
 INSERT INTO DEAN(MaDA, TenDA, DiaDiemDA, MaPHG) VALUES 
-('DA009', 'San pham ABC', 'Nha Trang', 'P003'),
-('DA010', 'San pham TTTT', 'HCM', 'P004'),
-('DA007', 'San pham YY', 'Ha Noi', 'P002'),
-('DA008', 'San pham X', 'Ha Noi', 'P004'),
 ('DA001', 'He thong quan ly khach san', 'Son Tra', 'P001'),
 ('DA002', 'He thong quan ly sinh vien', 'Hai Chau', 'P002'),
 ('DA003', 'He thong quan ly nha hang', 'Lien Chieu', 'P003'),
 ('DA004', 'Phan mem chuyen van ban thanh giong noi', 'Hoa Vang','P001'),
 ('DA005', 'Phan mem tu dien Anh Viet', 'Thanh Khe','P002'),
-('DA006', 'Phan mem trac nghiem Tieng Anh', 'Cam Le','P002')
+('DA006', 'Phan mem trac nghiem Tieng Anh', 'Cam Le','P002'),
+('DA007', 'San pham YY', 'Ha Noi', 'P002'),
+('DA008', 'San pham X', 'Ha Noi', 'P004'),
+('DA009', 'San pham ABC', 'Nha Trang', 'P003'),
+('DA010', 'San pham TTTT', 'HCM', 'P004')
 
-INSERT INTO PHANCONG(MaNV, MaDA, ThoiGian) VALUES
-('NV001','DA007', 180),
-('NV001','DA008', 200),
-('NV011','DA008', 180),
-('NV012','DA008', 200),
-('NV001','DA003', 150),
-('NV001','DA004', 150),
-('NV004','DA004', 100),
-('NV001','DA005', 150),
-('NV001','DA006', 150),
-('NV001','DA002', 150),
-('NV001','DA001', 100),
-('NV002','DA002', 150),
-('NV003','DA003', 200),
-('NV004','DA001', 100),
-('NV007','DA005', 50),
-('NV008','DA005', 10),
-('NV010','DA006', 30)
+INSERT INTO PHANCONG(MaNV, MaDA, ThoiGian, ThoiGianBatDau, ThoiGianKetThuc) VALUES
+('NV001','DA010', 200, '2016-04-01', '2016-06-07'),
+('NV001','DA009', 180, '2018-07-01', '2018-12-07'),
+('NV001','DA007', 180, '2017-07-01', '2017-12-07'),
+('NV001','DA008', 200, '2017-04-01', '2017-06-07'),
+('NV011','DA008', 180, '2019-07-01', '2020-01-07'),
+('NV012','DA008', 200, '2019-07-01', '2020-01-07'),
+('NV001','DA003', 150, '2019-07-01', '2020-01-07'),
+('NV001','DA004', 150, '2019-10-01', '2019-12-31'),
+('NV004','DA004', 100, '2019-10-01', '2019-12-31'),
+('NV001','DA005', 150, '2019-07-01', '2020-01-07'),
+('NV001','DA006', 150, '2019-07-01', '2020-01-07'),
+('NV001','DA002', 150, '2019-07-01', '2020-01-07'),
+('NV001','DA001', 100, '2019-09-01', '2020-01-01'),
+('NV002','DA002', 150, '2019-07-01', '2020-01-07'),
+('NV003','DA003', 200, '2019-07-01', '2020-01-07'),
+('NV004','DA001', 100, '2019-09-01', '2020-01-01'),
+('NV007','DA005', 50, '2019-07-01', '2020-01-07'),
+('NV008','DA005', 10, '2019-07-01', '2020-01-07'),
+('NV010','DA006', 30, '2017-01-01', '2017-05-06')
+
+ALTER TABLE NHANVIEN
+ADD CONSTRAINT FK_NV_NV FOREIGN KEY (MaNQL) REFERENCES NHANVIEN(MaNV)
+
+ALTER TABLE NHANVIEN 
+ADD CONSTRAINT FK_NV_PB FOREIGN KEY (MaPHG) REFERENCES PHONGBAN(MaPHG)
 
 -- 4. Cho biết mã nhân viên có tham gia đề án hoặc có thân nhân
 (SELECT MaNV FROM PHANCONG)
@@ -361,4 +360,41 @@ WHERE PB.TenPHG = 'Nghien cuu')
 UPDATE DEAN 
 SET DiaDiemDA = 'Vung Tau', MaPHG = 'P005'
 WHERE MaDA = 'DA010'
+
+-- 26. Tạo khung nhìn hiển thị danh sách họ tên các nhân viên ở Đà Nẵng mà tham gia ít nhất một đề án trong năm 2017.
+CREATE VIEW DanhSach26 AS
+SELECT DISTINCT NV.MaNV, (NV.HoNV + ' ' + NV.TenNV) AS HoTenNV 
+FROM NHANVIEN NV JOIN PHANCONG PC ON NV.MaNV = PC.MaNV
+WHERE YEAR(ThoiGianBatDau) = 2017 OR YEAR(ThoiGianKetThuc) = 2017
+
+-- 27. Tạo khung nhìn hiển thị các đề án vừa có nhân viên nam vừa có nhân viên nữ tham gia do phòng 'Nghien cuu' chủ trì trong ba tháng cuối năm 2019.
+CREATE VIEW DeAn27 AS
+((SELECT DA.MaDA, DA.TenDA
+FROM NHANVIEN NV JOIN PHANCONG PC ON NV.MaNV = PC.MaNV
+JOIN DEAN DA ON PC.MaDA = DA.MaDA 
+JOIN PHONGBAN PB ON DA.MaPHG = PB.MaPHG
+WHERE NV.Phai = 'Nam' AND PB.TenPHG = 'Nghien cuu' 
+AND PC.ThoiGianBatDau = '2019-10-01' AND PC.ThoiGianKetThuc='2019-12-31')
+INTERSECT
+(SELECT DA.MaDA, DA.TenDA
+FROM NHANVIEN NV JOIN PHANCONG PC ON NV.MaNV = PC.MaNV
+JOIN DEAN DA ON PC.MaDA = DA.MaDA 
+JOIN PHONGBAN PB ON DA.MaPHG = PB.MaPHG
+WHERE NV.Phai = 'Nu' AND PB.TenPHG = 'Nghien cuu' 
+AND PC.ThoiGianBatDau = '2019-10-01' AND PC.ThoiGianKetThuc='2019-12-31'))
+
+-- 28. Tìm mã nhân viên và số lượng thân nhân, đối với những nhân viên không có thân nhân nào cũng xuất ra
+SELECT NV.MaNV, COUNT(TenTN) AS SoLuongTN
+FROM NHANVIEN NV LEFT JOIN THANNHAN TN ON NV.MaNV = TN.MaNV
+GROUP BY NV.MaNV
+
+-- 29. Tìm các đề án do phòng ban có địa điểm là 'Lien Chieu' phụ trách
+ SELECT DA.MaDA, DA.TenDA
+ FROM DEAN DA JOIN DIADIEMPHG DDP ON DA.MaPHG = DDP.MaPHG
+ WHERE DDP.DiaDiem = 'Lien Chieu'
+
+-- 30. Tìm mã nhân viên, tên nhân viên tham gia đề án số 5 và có địa chỉ ở 'Hai Chau'
+SELECT NV.MaNV, NV.TenNV 
+FROM NHANVIEN NV JOIN PHANCONG PC ON NV.MaNV = PC.MaNV 
+WHERE PC.MaDA = 'DA005' AND NV.DiaChi = 'Hai Chau'
 
