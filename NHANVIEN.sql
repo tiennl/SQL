@@ -231,7 +231,7 @@ WHERE NV.MaPHG = 'P005' AND DA.TenDA = 'San pham X' AND PC.ThoiGian > 10
 
 -- 3. Tìm họ tên của từng nhân viên và người phụ trách trực tiếp nhân viên đó
 SELECT (NV.HoNV + ' ' + NV.TenNV) AS HoTenNV, (NQL.HoNV + ' ' + NQL.TenNV) AS HoTenNQL
-FROM NHANVIEN NV LEFT JOIN NHANVIEN NQL ON NV.MaNQL = NQL.MaNV 
+FROM NHANVIEN NV JOIN NHANVIEN NQL ON NV.MaNQL = NQL.MaNV 
 
 -- 4. Tìm họ tên của những nhân viên được “Tung” phụ trách trực tiếp
 SELECT (NV.HoNV + ' ' + NV.TenNV) AS HoTenNV
@@ -241,14 +241,13 @@ WHERE NQL.TenNV = 'Tung'
 -- 5. Cho biết các mã đề án có:
 -- Nhân viên với họ là ‘Nguyen’ tham gia hoặc,
 -- Trưởng phòng chủ trì đề án đó với họ là ‘Nguyen’
+(SELECT PC.MaDA
+FROM PHANCONG PC JOIN NHANVIEN NV ON PC.MaNV = NV.MaNV
+WHERE NV.HoNV = 'Nguyen')
+UNION
 (SELECT DA.MaDA 
 FROM DEAN DA JOIN PHONGBAN PB ON DA.MaPHG = PB.MaPHG 
 JOIN NHANVIEN NV ON PB.TruongPHG = NV.MaNV
-WHERE NV.HoNV = 'Nguyen')
-UNION
-(SELECT DA.MaDA
-FROM DEAN DA JOIN PHANCONG PC ON DA.MaDA = PC.MaDA 
-JOIN NHANVIEN NV ON PC.MaNV = NV.MaNV
 WHERE NV.HoNV = 'Nguyen')
 
 -- 6. Tìm nhân viên có người thân cùng tên và cùng giới tính
@@ -260,7 +259,7 @@ WHERE NV.TenNV = TN.TenTN AND NV.Phai = TN.Phai
 SELECT MaNV 
 FROM NHANVIEN 
 WHERE MaNV NOT IN 
-(SELECT NV.MaNV FROM NHANVIEN NV JOIN THANNHAN TN ON NV.MaNV = TN.MaNV)
+(SELECT MaNV FROM THANNHAN)
 
 -- 8. Tìm những nhân viên có lương lớn hơn lương của ít nhất một nhân viên phòng 4
 SELECT MaNV 
@@ -276,10 +275,11 @@ FROM PHONGBAN PB JOIN NHANVIEN NV ON PB.TruongPHG = NV.MaNV
 JOIN THANNHAN TN ON NV.MaNV = TN.MaNV
 
 -- 11. Tìm tên các nhân viên được phân công làm tất cả các đồ án
-SELECT MaNV
+SELECT TenNV FROM NHANVIEN WHERE MaNV IN
+(SELECT MaNV
 FROM PHANCONG
 GROUP BY MaNV
-HAVING COUNT(MaDA) = (SELECT COUNT(MaDA) FROM DEAN)
+HAVING COUNT(MaDA) = (SELECT COUNT(MaDA) FROM DEAN))
 
 -- 12. Tìm tổng lương, lương cao nhất, lương thấp nhất và lương trung bình của các nhân viên
 SELECT SUM(Luong) AS TongLuong, MAX(Luong) AS LuongCaoNhat, MIN(Luong) AS LuongThapNhat, AVG(Luong) AS LuongTB
