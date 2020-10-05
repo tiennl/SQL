@@ -147,7 +147,7 @@ FROM HO_DAN
 ORDER BY SoNhanKhau DESC
 
 -- 7. Đếm số lượt ủng hộ diễn ra trong ngày hiện tại (của hệ thống)
-SELECT COUNT(*) AS SoLuotUngHo
+SELECT COUNT(MaDotUngHo) AS SoLuotUngHo
 FROM DOT_UNG_HO
 WHERE NgayUngHo = GETDATE()
 
@@ -220,19 +220,35 @@ HAVING COUNT(MaDotUngHo) >= 2)
 
 --16 Đếm tổng số đợt được nhận ủng hộ của từng hộ dân trong năm 2016 với yêu cầu chỉ thực hiện tính đối với những đợt
 --được nhận ủng hộ có hình thức nhận ủng hộ là 'Tien mat'
-SELECT 
+SELECT DNUH.MaHoDan, COUNT(DNUH.MaDotNhanUngHo) AS TongSoDot
 FROM HINH_THUC_UH HTUH JOIN CHI_TIET_NHAN_UNG_HO CTNUH ON HTUH.MaHinhThucUH = CTNUH.MaHinhThucUH
-JOIN 
+JOIN DOT_NHAN_UNG_HO DNUH ON CTNUH.MaDotNhanUngHo = DNUH.MaDotNhanUngHo
+WHERE YEAR(DNUH.NgayNhanUngHo) = 2016 AND HTUH.TenHinhThucUngHo = 'Tien mat'
+GROUP BY DNUH.MaHoDan
 
 --17 Liệt kê những ngày vừa diễn ra sự kiện có đơn vị ủng hộ đến trao hàng cứu trợ cho chính quyền,
 --vừa diễn ra sự kiện có hộ dân được chính quyền phân phối hàng cứu trợ, kết quả được sắp xếp tăng dần theo ngày tìm được
-
+SELECT NgayUngHo AS NgayDienRaCa2
+FROM DOT_UNG_HO 
+WHERE NgayUngHo IN
+(SELECT NgayNhanUngHo FROM DOT_NHAN_UNG_HO)
+ORDER BY NgayUngHo ASC
 
 --18 Cập nhật cột DonViTinh trong bảng CHI_TIET_UNG_HO thanh NULL đối với record có hình thức ủng hộ với TenHinhThucUngHo
 --là 'Quan ao' và có giấy ủng hộ (NgayUngHo) trước ngày 30/12/2015
-
+UPDATE CHI_TIET_UNG_HO 
+SET DonViTinh = 'NULL'
+WHERE MaHinhThucUH IN
+(SELECT MaHinhThucUH FROM HINH_THUC_UH WHERE TenHinhThucUngHo = 'Quan ao')
+AND MaDotUngHo IN
+(SELECT MaDotUngHo FROM DOT_UNG_HO WHERE NgayUngHo < '2015-12-30')
 
 --19 Xóa những hộ dân chưa từng được nhận một lần ủng hộ nào từ chính quyền
-
+DELETE FROM HO_DAN
+WHERE MaHoDan NOT IN
+(SELECT MaHoDan FROM DOT_NHAN_UNG_HO)
 
 --20 Xóa những record trong bảng CHI_TIET_UNG_HO của những đợt ủng hộ diễn ra trước năm 2015
+DELETE FROM CHI_TIET_UNG_HO
+WHERE MaDotUngHo IN
+(SELECT MaDotUngHo FROM DOT_UNG_HO WHERE YEAR(NgayUngHo) < 2015)
