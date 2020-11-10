@@ -1,14 +1,14 @@
-﻿CREATE DATABASE MAYBAY
+﻿CREATE DATABASE LICHTRINHMAYBAY
 
-USE MAYBAY
+USE LICHTRINHMAYBAY
 
 CREATE TABLE LOAIMAYBAY
 (
 	MaLoai VARCHAR(10) NOT NULL PRIMARY KEY,
 	LoaiMB VARCHAR(50),
 	DongCo VARCHAR(50),
-	TocDoToiThieu VARCHAR(20),
-	TocDoToiDa VARCHAR(20)
+	TocDoToiThieu INT,
+	TocDoToiDa INT
 )
 
 CREATE TABLE MAYBAY
@@ -48,9 +48,9 @@ CREATE TABLE LICHTRINHMAYBAY
 )
 
 INSERT INTO LOAIMAYBAY VALUES
-('L01', 'Boeing 747', 'tuoc bin canh quat', '1000km/h', '3000km/h'),
-('L02', 'A321', 'tuoc bin phan luc', '1500km/h', '3200km/h'),
-('L03', 'Boeing 737', 'tuoc bin roc ket', '1100km/h', '2500km/h')
+('L01', 'Boeing 747', 'tuoc bin canh quat', 1000, 3000),
+('L02', 'A321', 'tuoc bin phan luc', 1500, 3200),
+('L03', 'Boeing 737', 'tuoc bin roc ket', 1100, 2500)
 
 INSERT INTO MAYBAY VALUES
 ('VN01', 'L01', '2015-05-29'),
@@ -70,7 +70,10 @@ a. Tạo khung nhìn có tên là V_MayBay để thấy được thông tin củ
 độ tối thiểu lớn hơn 1100km/h và được bắt đầu sử dụng từ ngày 01/01/2014. (1 điểm)
 b. Thông qua khung nhìn V_MayBay thực hiện việc cập ngày bắt đầu sử dụng thành
 01/31/2014 đối với những máy bay có ngày bắt đầu sử dụng là 02/28/2014. (1 điểm)*/
-
+CREATE VIEW V_MayBay AS 
+SELECT MB.*
+FROM MAYBAY MB JOIN	LOAIMAYBAY LMB ON MB.MaLoai = LMB.MaLoai
+WHERE LMB.TocDoToiThieu > 1100 AND MB.NgayBatDauSD = '2014-01-01'
 
 /* Câu 2: Tạo 2 thủ tục (Stored Procedure):
 a. Thủ tục Sp_1: Dùng để xóa thông tin của những phi công có mã phi công được truyền
