@@ -100,21 +100,47 @@ chỉ là "Da Nang". (1 điểm)
 b. Thông qua khung nhìn V_KhachHang thực hiện việc cập nhật ngày đặt hàng thành
 06/15/2015 đối với những khách hang đặt hàng vào ngày 06/15/2014. (1 điểm)*/
 
-CREATE VIEW V_KhachHang
-AS 
-SELECT * FROM DONHANG AS DH JOIN KHACHHANG AS KH ON DH.MaKH=KH.MaKH WHERE NgayDat < '2015-06-15' AND DiaChi = 'Da Nang'
+CREATE VIEW V_KhachHang AS 
+SELECT DH.* FROM DONHANG DH JOIN KHACHHANG KH ON DH.MaKH = KH.MaKH 
+WHERE DH.NgayDat < '2015-06-15' AND KH.DiaChi = 'Da Nang'
 
 UPDATE V_KhachHang
-   SET NgayDat = '2015-06-15'
-   WHERE NgayDat = '2014-06-15';
-
+SET NgayDat = '2015-06-15'
+WHERE NgayDat = '2014-06-15'
 
 /*Câu 2: Tạo 2 thủ tục:
 a. Thủ tục Sp_1: Dùng để xóa thông tin của những sản phẩm có mã sản phẩm được
-truyền vào như một tham số của thủ tục. (1 điểm)
-b. Thủ tục Sp_2: Dùng để bổ sung thêm bản ghi mới vào bảng CHITIETDONHANG
-(Sp_2 phải thực hiện kiểm tra tính hợp lệ của dữ liệu được bổ sung là không trùng
-khóa chính và đảm bảo toàn vẹn tham chiếu đến các bảng có liên quan). (1 điểm)*/
+truyền vào như một tham số của thủ tục. (1 điểm)*/
+CREATE PROCEDURE SP_1(@MaSP NVARCHAR(50))
+AS
+	BEGIN
+		DELETE FROM SANPHAM 
+		WHERE MaSP = @MaSP
+	END
+
+SP_1 'SP003' 
+
+-- b. Thủ tục Sp_2: Dùng để bổ sung thêm bản ghi mới vào bảng CHITIETDONHANG
+-- (Sp_2 phải thực hiện kiểm tra tính hợp lệ của dữ liệu được bổ sung là không trùng
+-- khóa chính và đảm bảo toàn vẹn tham chiếu đến các bảng có liên quan). (1 điểm)
+CREATE PROCEDURE SP_2(
+			@MaDH NVARCHAR(50), 
+			@MaSP NVARCHAR(50), 
+			@SoLuong INT, 
+			@TongTien FLOAT)
+AS 
+	BEGIN
+		IF NOT EXISTS (SELECT MaDH, MaSP FROM CHITIETDONHANG WHERE MaDH = @MaDH AND MaSP = @MaSP)
+			IF (@MaDH IS NULL OR EXISTS(
+			SELECT MaDH FROM DONHANG WHERE MaDH=@MaDH))
+			AND
+			(@MaSP IS NULL OR EXISTS(
+			SELECT MaSP FROM SANPHAM WHERE MaSP=@MaSP))
+				INSERT INTO CHITIETDONHANG VALUES (@MaDH, @MaSP, @SoLuong, @TongTien)
+		ELSE PRINT 'Khong them duoc'
+	END
+
+SP_2 'DH001', 'SP001', 10, 1000.5
 
 
 /*Câu 3: Viết 2 bẫy sự kiện (trigger) cho bảng CHITIETDONHANG theo yêu cầu sau:
