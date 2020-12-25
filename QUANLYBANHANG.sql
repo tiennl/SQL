@@ -100,45 +100,44 @@ chỉ là "Da Nang". (1 điểm)
 b. Thông qua khung nhìn V_KhachHang thực hiện việc cập nhật ngày đặt hàng thành
 06/15/2015 đối với những khách hang đặt hàng vào ngày 06/15/2014. (1 điểm)*/
 
-CREATE VIEW V_KhachHang AS 
-SELECT DH.* FROM DONHANG DH JOIN KHACHHANG KH ON DH.MaKH = KH.MaKH 
-WHERE DH.NgayDat < '2015-06-15' AND KH.DiaChi = 'Da Nang'
+create view V_KhachHang as 
+select dh.* from DONHANG dh join KHACHHANG kh on dh.MaKH = kh.MaKH 
+where dh.NgayDat < '2015-06-15' and kh.DiaChi = 'Da Nang'
 
-UPDATE V_KhachHang
-SET NgayDat = '2015-06-15'
-WHERE NgayDat = '2014-06-15'
+update V_KhachHang
+set NgayDat = '2015-06-15'
+where NgayDat = '2014-06-15'
 
 /*Câu 2: Tạo 2 thủ tục:
 a. Thủ tục Sp_1: Dùng để xóa thông tin của những sản phẩm có mã sản phẩm được
 truyền vào như một tham số của thủ tục. (1 điểm)*/
-CREATE PROCEDURE SP_1(@MaSP NVARCHAR(50))
-AS
-	BEGIN
-		DELETE FROM SANPHAM 
-		WHERE MaSP = @MaSP
-	END
+create proc SP_1(@MaSP nvarchar(50))
+as
+	begin
+		delete from SANPHAM where MaSP = @MaSP
+	end
 
 SP_1 'SP003' 
 
 -- b. Thủ tục Sp_2: Dùng để bổ sung thêm bản ghi mới vào bảng CHITIETDONHANG
 -- (Sp_2 phải thực hiện kiểm tra tính hợp lệ của dữ liệu được bổ sung là không trùng
 -- khóa chính và đảm bảo toàn vẹn tham chiếu đến các bảng có liên quan). (1 điểm)
-alter PROCEDURE SP_2(
-@MaDH NVARCHAR(50), 
-@MaSP NVARCHAR(50), 
-@SoLuong INT, 
-@TongTien FLOAT)
-AS 
-	BEGIN
-		IF NOT EXISTS (SELECT MaDH, MaSP FROM CHITIETDONHANG WHERE MaDH = @MaDH AND MaSP = @MaSP)
-			BEGIN
-				IF (@MaDH IS NULL OR EXISTS(SELECT MaDH FROM DONHANG WHERE MaDH = @MaDH))
-				AND (@MaSP IS NULL OR EXISTS(SELECT MaSP FROM SANPHAM WHERE MaSP = @MaSP))
-					INSERT INTO CHITIETDONHANG VALUES (@MaDH, @MaSP, @SoLuong, @TongTien)
-				ELSE PRINT N'Không thêm được'
-			END
-		ELSE PRINT N'Không thêm được'
-	END
+alter proc SP_2(
+@MaDH nvarchar(50), 
+@MaSP nvarchar(50), 
+@SoLuong int, 
+@TongTien float)
+as 
+	begin
+		if not exists (select MaDH, MaSP from CHITIETDONHANG where MaDH = @MaDH and MaSP = @MaSP)
+			begin
+				if (@MaDH is null or exists (select MaDH from DONHANG where MaDH = @MaDH))
+				AND (@MaSP is null or exists (select MaSP from SANPHAM where MaSP = @MaSP))
+					insert into CHITIETDONHANG values (@MaDH, @MaSP, @SoLuong, @TongTien)
+				else print N'Không thêm được'
+			end
+		else print N'Không thêm được'
+	end
 
 SP_2 'DH005', 'SP001', 10, 1500.5
 select * from CHITIETDONHANG
@@ -319,8 +318,8 @@ begin
 	deallocate point
 end
 
-
-create proc Sp_SanPham1 -- ok
+-- ok 
+create proc Sp_SanPham1 
 as
 begin
 	begin tran deletepro;
