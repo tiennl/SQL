@@ -89,7 +89,7 @@ INSERT INTO DONHANG(MaDH , MaKH, MaTT, NgayDat) VALUES
 ('DH003', 'KH001', 'TT03', '2015-04-20')
 
 INSERT INTO CHITIETDONHANG(MaDH , MaSP, SoLuong, TongTien) VALUES
-('DH001', 'SP002', 3, 56.000 ),
+('DH001', 'SP002', 3, 56.000),
 ('DH003', 'SP001', 10, 27.444),
 ('DH002', 'SP002', 10, 67.144)
 
@@ -123,35 +123,112 @@ SP_1 'SP003'
 -- b. Thủ tục Sp_2: Dùng để bổ sung thêm bản ghi mới vào bảng CHITIETDONHANG
 -- (Sp_2 phải thực hiện kiểm tra tính hợp lệ của dữ liệu được bổ sung là không trùng
 -- khóa chính và đảm bảo toàn vẹn tham chiếu đến các bảng có liên quan). (1 điểm)
-CREATE PROCEDURE SP_2(
-			@MaDH NVARCHAR(50), 
-			@MaSP NVARCHAR(50), 
-			@SoLuong INT, 
-			@TongTien FLOAT)
+alter PROCEDURE SP_2(
+@MaDH NVARCHAR(50), 
+@MaSP NVARCHAR(50), 
+@SoLuong INT, 
+@TongTien FLOAT)
 AS 
 	BEGIN
 		IF NOT EXISTS (SELECT MaDH, MaSP FROM CHITIETDONHANG WHERE MaDH = @MaDH AND MaSP = @MaSP)
-			IF (@MaDH IS NULL OR EXISTS(
-			SELECT MaDH FROM DONHANG WHERE MaDH=@MaDH))
-			AND
-			(@MaSP IS NULL OR EXISTS(
-			SELECT MaSP FROM SANPHAM WHERE MaSP=@MaSP))
-				INSERT INTO CHITIETDONHANG VALUES (@MaDH, @MaSP, @SoLuong, @TongTien)
-		ELSE PRINT 'Khong them duoc'
+			BEGIN
+				IF (@MaDH IS NULL OR EXISTS(SELECT MaDH FROM DONHANG WHERE MaDH = @MaDH))
+				AND (@MaSP IS NULL OR EXISTS(SELECT MaSP FROM SANPHAM WHERE MaSP = @MaSP))
+					INSERT INTO CHITIETDONHANG VALUES (@MaDH, @MaSP, @SoLuong, @TongTien)
+				ELSE PRINT N'Không thêm được'
+			END
+		ELSE PRINT N'Không thêm được'
 	END
 
-SP_2 'DH001', 'SP001', 10, 1000.5
-
+SP_2 'DH005', 'SP001', 10, 1500.5
+select * from CHITIETDONHANG
 
 /*Câu 3: Viết 2 bẫy sự kiện (trigger) cho bảng CHITIETDONHANG theo yêu cầu sau:
 a. Trigger_1: Khi thực hiện đăng ký mới một đơn đặt hàng cho khách hàng thì cập nhật
 lại số lượng sản phẩm trong bảng sản phẩm (tức là số lượng sản phẩm còn lại sau khi
-đã bán). Bẫy sự kiện chỉ xử lý 1 bản ghi. (1 điểm)
-b. Trigger_2: Khi cập nhập lại số lượng sản phẩm mà khách hàng đã đặt hàng, kiểm tra
+đã bán). Bẫy sự kiện chỉ xử lý 1 bản ghi. (1 điểm)*/
+CREATE TRIGGER Trigger_1
+ON CHITIETDONHANG
+FOR INSERT
+AS
+BEGIN
+	UPDATE SANPHAM
+		SET SANPHAM.Soluong = SANPHAM.Soluong - inserted.Soluong
+		FROM SANPHAM INNER JOIN inserted ON SANPHAM.MaSP = inserted.MaSP
+	PRINT 'Trigger 1'
+END
+
+alter trigger Trigger_1
+on CHITIETDONHANG
+after insert
+as
+begin
+	declare @SoLuong int
+	declare @MaSP nvarchar(50)
+	select @SoLuong=SoLuong from inserted
+	select @MaSP=MaSP from inserted
+	update SANPHAM set SoLuong=(SoLuong-@SoLuong) where MaSP=@MaSP
+end
+
+INSERT INTO CHITIETDONHANG(MaDH , MaSP, SoLuong, TongTien) VALUES
+('DH001', 'SP001', 10, 100.000)
+select * from CHITIETDONHANG
+select * from SANPHAM
+
+/*b. Trigger_2: Khi cập nhập lại số lượng sản phẩm mà khách hàng đã đặt hàng, kiểm tra
 xem số lượng cập nhật có phù hợp hay không (số lượng phải lớn hơn 1 và nhỏ hơn
 100). Nếu dữ liệu hợp lệ thì cho phép cập nhật, nếu không thì hiển thị thông báo "số
 lượng sản phẩm được đặt hàng phải nằm trong khoảng giá trị từ 1 đến 100" và thực
 hiện quay lui giao tác. (1 điểm)*/
+alter trigger Trigger_2
+on CHITIETDONHANG
+for update, insert
+as
+begin
+		declare @soluong int = 0
+		select @soluong = CHITIETDONHANG.SoLuong from CHITIETDONHANG join inserted on CHITIETDONHANG.MaDH = inserted.MaDH
+		if (@soluong < 1 or @soluong > 100)
+		begin
+			print N'số lượng sản phẩm được đặt hàng phải nằm trong khoảng giá trị từ 1 đến 100'
+			rollback tran
+		end
+		else
+		begin
+			update CHITIETDONHANG set SoLuong = @soluong 
+			from inserted join CHITIETDONHANG
+			on inserted.MaDH = CHITIETDONHANG.MaDH
+			print 'Trigger 2'
+		end
+end
+
+alter trigger Trigger_2
+on CHITIETDONHANG
+for update, insert
+as
+begin
+	declare @SoLuong int
+	select @SoLuong=SoLuong from inserted
+	if(@SoLuong >= 1 and @SoLuong <= 100) 
+	begin
+		print 'Trigger 2'
+		update CHITIETDONHANG set SoLuong = @soluong 
+			from inserted join CHITIETDONHANG
+			on inserted.MaDH = CHITIETDONHANG.MaDH
+	end
+	else
+	begin
+		print N'Số lượng sản phẩm được đặt hàng phải nằm trong khoảng giá trị từ 1 đến 100'
+		rollback tran
+	end
+end
+
+
+INSERT INTO CHITIETDONHANG(MaDH , MaSP, SoLuong, TongTien) VALUES
+('DH002', 'SP001', 10, 500.000)
+delete from CHITIETDONHANG where MaDH = 'DH002'
+update sanpham set SoLuong = 500 where MaSP = 'SP001'
+select * from CHITIETDONHANG
+select * from SANPHAM
 
 
 /*Câu 4: Tạo hàm do người dùng định nghĩa (user-defined function) để tính điểm thưởng cho
@@ -161,10 +238,132 @@ vào thông qua tham số đầu vào của hàm. Cụ thể như sau:
 về kết quả là khách hàng được nhận 20 điểm thưởng. (1 điểm)
 - Nếu tổng số tiền khách hàng đã trả cho tất cả các lần mua hàng từ 2.000.000 trở đi, thì
 trả về kết quả là khách hàng được nhận 50 điểm thưởng. (1 điểm)*/
+alter function UDF_tinhdiem(@MaKH nvarchar(50))
+returns nvarchar(100)
+as
+begin
+	declare @result nvarchar(100)
+	if not exists (select kh.MaKH from KHACHHANG kh join DONHANG dh on kh.MaKH = dh.MaKH 
+	join CHITIETDONHANG ctdh on dh.MaDH = ctdh.MaDH 
+	where kh.MaKH = @MaKH and year(dh.NgayDat) = 2014
+	group by kh.MaKH)
+	or exists (select kh.MaKH from KHACHHANG kh join DONHANG dh on kh.MaKH = dh.MaKH 
+	join CHITIETDONHANG ctdh on dh.MaDH = ctdh.MaDH 
+	where kh.MaKH = @MaKH and year(dh.NgayDat) = 2014
+	group by kh.MaKH 
+	having sum(ctdh.TongTien) < 2000000) 
+		set @result = N'khách hàng được nhận 20 điểm thưởng'
+	else 
+		set @result = N'khách hàng được nhận 50 điểm thưởng'
+	return @result
+end
 
+alter function UDF_tinhdiem(@MaKH nvarchar(50))
+returns nvarchar(100)
+as
+begin
+	declare @result nvarchar(100)
+	if exists (select kh.MaKH from KHACHHANG kh join DONHANG dh on kh.MaKH = dh.MaKH 
+	join CHITIETDONHANG ctdh on dh.MaDH = ctdh.MaDH 
+	where kh.MaKH = @MaKH and year(dh.NgayDat) = 2014
+	group by kh.MaKH 
+	having sum(ctdh.TongTien) >= 2000000) 
+		set @result = N'khách hàng được nhận 50 điểm thưởng'
+	else 
+		set @result = N'khách hàng được nhận 20 điểm thưởng'
+	return @result
+end
+
+print dbo.UDF_tinhdiem('KH004')
+
+select kh.MaKH, sum(ctdh.TongTien) from KHACHHANG kh join DONHANG dh on kh.MaKH = dh.MaKH 
+	join CHITIETDONHANG ctdh on dh.MaDH = ctdh.MaDH
+	where year(dh.NgayDat) = 2014
+	group by kh.MaKH
+
+select * from CHITIETDONHANG
+select * from DONHANG
+select * from KHACHHANG
+INSERT INTO CHITIETDONHANG(MaDH , MaSP, SoLuong, TongTien) VALUES
+('DH001', 'SP002', 15, 2500000.000)
+INSERT INTO DONHANG(MaDH , MaKH, MaTT, NgayDat) VALUES
+('DH004', 'KH004', 'TT03', '2014-01-04')
+INSERT INTO CHITIETDONHANG(MaDH , MaSP, SoLuong, TongTien) VALUES
+('DH004', 'SP002', 10, 500000.000)
+
+select kh.MaKH, sum(ctdh.TongTien) from KHACHHANG kh join DONHANG dh on kh.MaKH = dh.MaKH 
+	join CHITIETDONHANG ctdh on dh.MaDH = ctdh.MaDH
+	group by kh.MaKH
 
 /*Câu 5: Tạo thủ tục Sp_SanPham tìm những sản phẩm đã từng được khách hàng đặt mua để
 xóa thông tin về những sản phẩm đó trong bảng SANPHAM và xóa thông tin những
 đơn hàng có liên quan đến những sản phẩm đó (tức là phải xóa những bản ghi trong bảng
 DONHANG và CHITIETDONHANG có liên quan đến các sản phẩm đó). (2 điểm)*/
 
+alter proc Sp_SanPham -- chưa đúng
+as
+begin
+	declare point cursor for select MaDH, MaSP from CHITIETDONHANG
+	open point
+	declare @MaDH varchar(20)
+	declare @MaSP varchar(20)
+	fetch next from point into @MaDH, @MaSP
+	while @@FETCH_STATUS = 0
+	begin
+   		delete from SANPHAM where SANPHAM.MaSP = @MaSP
+		delete from DONHANG where MaDH = @MaDH
+		delete from CHITIETDONHANG where MaDH = @MaDH
+		fetch next from point into @MaDH, @MaSP
+	end
+	close point
+	deallocate point
+end
+
+
+create proc Sp_SanPham1 -- ok
+as
+begin
+	begin tran deletepro;
+
+	declare contro cursor for select MaSP, MaDH from CHITIETDONHANG
+	open contro
+	declare @masp nchar(10)
+	declare @madh nchar(10)
+	fetch next from contro into @masp, @madh
+	while @@FETCH_STATUS = 0
+	begin
+		delete from CHITIETDONHANG
+		if @@ERROR !=0
+			begin
+				print 'rollback';
+				rollback tran deletepro
+			end
+
+		delete from SANPHAM where SANPHAM.MaSP = @masp
+		if @@ERROR !=0
+			begin 
+				print 'rollback';
+				rollback tran deletepro
+			end
+
+		delete from DONHANG where MaDH =@madh
+		if @@ERROR !=0
+			begin 
+				print 'rollback';
+				rollback tran deletepro
+			end
+
+		fetch next from contro into @madh,@masp
+	end
+	close contro
+	deallocate contro
+	commit tran deletepro;
+end
+
+select * from CHITIETDONHANG
+select * from DONHANG
+delete CHITIETDONHANG where MaDH = 'DH004'
+select * from SANPHAM
+INSERT INTO CHITIETDONHANG(MaDH , MaSP, SoLuong, TongTien) VALUES
+('DH004', 'SP002', 10, 500000.000)
+exec Sp_SanPham1
