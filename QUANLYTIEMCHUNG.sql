@@ -163,14 +163,26 @@ as
 		else print N'Không thêm được'
 	end
 
-exec Sp_2 'TC016', 'VN003', 'VX004', '2014-10-08', 1 
+exec Sp_2 'TC016', 'VN009', 'VX004', '2014-10-08', 1 
 
 select * from TIEMCHUNG
+
 
 /*Câu 3: Viết 2 Trigger cho bảng TIEMCHUNG theo yêu cầu sau:
 a) Trigger_1: Khi thực hiện xóa một bản ghi từ bảng VATNUOI thì hiển thị tổng số bản ghi 
 đã được xóa ra giao diện console của database server. (1 điểm)*/
-
+-- chưa được
+alter trigger Trigger_1
+on TIEMCHUNG
+for delete
+as
+begin
+	declare @soluong int
+	declare @MaVN nvarchar(50)
+	select @soluong = COUNT(*) from deleted
+	select @MaVN = MaVN from inserted
+	print @soluong
+end
 
 
 /*b) Trigger_2: Khi thêm mới một bản ghi vào bảng TIEMCHUNG thì giá trị cột NgayTiem, 
@@ -179,7 +191,26 @@ thời gian tiêm phải nhỏ hơn thời gian của lần tiêm chủng cuối
 của vật nuôi ít nhất 30 ngày. Nếu dữ liệu hợp lệ thì cho phép cập nhật, nếu không thì sẽ hiển thị 
 thông báo “Thời gian tiêm chủng phải nhỏ hơn thời gian tiêm chủng lần cuối cùng ít nhất 30 ngày” 
 ra giao diện console của database server. (1 điểm)*/
-
+alter trigger Trigger_2
+on TIEMCHUNG
+for insert
+as
+begin
+		declare @ngaytiem date
+		select @ngaytiem = TIEMCHUNG.NgayTiem from TIEMCHUNG join inserted on TIEMCHUNG.MaTC = inserted.MaTC
+		if (@soluong <= 1 or @soluong >= 100)
+		begin
+			print N'số lượng sản phẩm được đặt hàng phải nằm trong khoảng giá trị từ 1 đến 100'
+			rollback tran
+		end
+		else
+		begin
+			update CHITIETDONHANG set SoLuong = @soluong 
+			from inserted join CHITIETDONHANG
+			on inserted.MaDH = CHITIETDONHANG.MaDH
+			print 'Trigger 2'
+		end
+end
 
 /*Câu 4: Tạo 2 User-defined function để thực hiện các yêu cầu sau:
 a) User-defined function funct1: Đếm số lượng các loại vacxin mà vật nuôi đã được tiêm chủng 
