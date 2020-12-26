@@ -164,9 +164,9 @@ as
 begin
 	declare @SoLuong int
 	declare @MaSP nvarchar(50)
-	select @SoLuong=SoLuong from inserted
-	select @MaSP=MaSP from inserted
-	update SANPHAM set SoLuong=(SoLuong-@SoLuong) where MaSP=@MaSP
+	select @SoLuong = SoLuong from inserted
+	select @MaSP = MaSP from inserted
+	update SANPHAM set SoLuong = (SoLuong - @SoLuong) where MaSP = @MaSP
 end
 
 INSERT INTO CHITIETDONHANG(MaDH , MaSP, SoLuong, TongTien) VALUES
@@ -186,7 +186,7 @@ as
 begin
 		declare @soluong int = 0
 		select @soluong = CHITIETDONHANG.SoLuong from CHITIETDONHANG join inserted on CHITIETDONHANG.MaDH = inserted.MaDH
-		if (@soluong < 1 or @soluong > 100)
+		if (@soluong <= 1 or @soluong >= 100)
 		begin
 			print N'số lượng sản phẩm được đặt hàng phải nằm trong khoảng giá trị từ 1 đến 100'
 			rollback tran
@@ -207,7 +207,7 @@ as
 begin
 	declare @SoLuong int
 	select @SoLuong=SoLuong from inserted
-	if(@SoLuong >= 1 and @SoLuong <= 100) 
+	if(@SoLuong > 1 and @SoLuong < 100) 
 	begin
 		print 'Trigger 2'
 		update CHITIETDONHANG set SoLuong = @soluong 
