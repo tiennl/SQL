@@ -1,7 +1,7 @@
-CREATE DATABASE QuanLyCuaHangSach2
+CREATE DATABASE QuanLyCuaHangSach
 GO
 
-USE QuanLyCuaHangSach2
+USE QuanLyCuaHangSach
 GO
 
 CREATE TABLE ChiNhanh(
