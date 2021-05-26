@@ -1,7 +1,7 @@
-CREATE DATABASE QuanLyCuaHangSach
+CREATE DATABASE QuanLyCuaHangSach2
 GO
 
-USE QuanLyCuaHangSach
+USE QuanLyCuaHangSach2
 GO
 
 CREATE TABLE ChiNhanh(
@@ -93,10 +93,6 @@ INSERT [dbo].[NhanVien] ([MaNV], [TenNV], [DiaChi], [TenChiNhanh], [MaCN]) VALUE
 INSERT [dbo].[NhaXuatBan] ([MaNXB], [TenNXB], [DiaChi]) VALUES (N'NXB1', N'Kim Đồng', N'Hà Nội')
 INSERT [dbo].[NhaXuatBan] ([MaNXB], [TenNXB], [DiaChi]) VALUES (N'NXB2', N'Thanh Niên', N'Đà Nẵng')
 
-INSERT [dbo].[Sach] ([MaSach], [TenSach], [MaTheLoai], [MaTacGia], [MaNXB], [NamXuatBan]) VALUES (N'MS1', N'Thám Tử Conan', N'TL1', N'TG1', N'NXB1', CAST(N'2021-12-31' AS Date))
-INSERT [dbo].[Sach] ([MaSach], [TenSach], [MaTheLoai], [MaTacGia], [MaNXB], [NamXuatBan]) VALUES (N'MS2', N'Doremon', N'TL2', N'TG2', N'NXB2', CAST(N'2021-12-20' AS Date))
-INSERT [dbo].[Sach] ([MaSach], [TenSach], [MaTheLoai], [MaTacGia], [MaNXB], [NamXuatBan]) VALUES (N'MS3', N'Thần Đồng Đất Việt', N'TL3', N'TG3', N'NXB2', CAST(N'2021-12-21' AS Date))
-
 INSERT [dbo].[TacGia] ([MaTG], [TenTG], [GhiChu]) VALUES (N'TG1', N'GoSho Aoyama', N'Trinh Thám')
 INSERT [dbo].[TacGia] ([MaTG], [TenTG], [GhiChu]) VALUES (N'TG2', N'Nguyễn Linh', N'Thần Đồng VN')
 INSERT [dbo].[TacGia] ([MaTG], [TenTG], [GhiChu]) VALUES (N'TG3', N'Fumiko', N'Doremon')
@@ -104,6 +100,10 @@ INSERT [dbo].[TacGia] ([MaTG], [TenTG], [GhiChu]) VALUES (N'TG3', N'Fumiko', N'D
 INSERT [dbo].[TheLoai] ([MaTheLoai], [TenTheLoai]) VALUES (N'TL1', N'Trinh Thám')
 INSERT [dbo].[TheLoai] ([MaTheLoai], [TenTheLoai]) VALUES (N'TL2', N'Thiếu Nhi')
 INSERT [dbo].[TheLoai] ([MaTheLoai], [TenTheLoai]) VALUES (N'TL3', N'Truyện Dân Gian')
+
+INSERT [dbo].[Sach] ([MaSach], [TenSach], [MaTheLoai], [MaTacGia], [MaNXB], [NamXuatBan]) VALUES (N'MS1', N'Thám Tử Conan', N'TL1', N'TG1', N'NXB1', CAST(N'2021-12-31' AS Date))
+INSERT [dbo].[Sach] ([MaSach], [TenSach], [MaTheLoai], [MaTacGia], [MaNXB], [NamXuatBan]) VALUES (N'MS2', N'Doremon', N'TL2', N'TG2', N'NXB2', CAST(N'2021-12-20' AS Date))
+INSERT [dbo].[Sach] ([MaSach], [TenSach], [MaTheLoai], [MaTacGia], [MaNXB], [NamXuatBan]) VALUES (N'MS3', N'Thần Đồng Đất Việt', N'TL3', N'TG3', N'NXB2', CAST(N'2021-12-21' AS Date))
 
 INSERT [dbo].[HoaDon] ([MaHD], [MaKH], [MaNV], [NgayLapHoaDon]) VALUES (N'HD1', N'KH1', N'NV1', CAST(N'2021-12-31' AS Date))
 INSERT [dbo].[HoaDon] ([MaHD], [MaKH], [MaNV], [NgayLapHoaDon]) VALUES (N'HD2', N'KH2', N'NV2', CAST(N'2021-12-31' AS Date))
