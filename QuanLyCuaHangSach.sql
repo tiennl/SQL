@@ -1,4 +1,4 @@
-﻿CREATE DATABASE QuanLyCuaHangSach
+CREATE DATABASE QuanLyCuaHangSach
 GO
 
 USE QuanLyCuaHangSach
@@ -20,13 +20,12 @@ CREATE TABLE NhanVien(
 )
 
 CREATE TABLE Sach(
-	MaSach VARCHAR(50),
+	MaSach VARCHAR(50) PRIMARY KEY,
 	TenSach NVARCHAR(50),
 	MaTheLoai VARCHAR(50),
 	MaTacGia VARCHAR(50),
 	MaNXB VARCHAR(50),
-	NamXuatBan DATE,
-	PRIMARY KEY(MaSach,MaTheLoai,MaTacGia,MaNXB)
+	NamXuatBan DATE
 )
 
 CREATE TABLE TacGia(
@@ -53,11 +52,29 @@ CREATE TABLE KhachHang(
 	MaCN VARCHAR(50)
 )
 
+CREATE TABLE HoaDon(
+	MaHD VARCHAR(50) PRIMARY KEY,
+	MaKH VARCHAR(50),
+	MaNV VARCHAR(50),
+	NgayLapHoaDon DATE
+)
+
+CREATE TABLE CT_HoaDon(
+	MaHD VARCHAR(50),
+	MaSach VARCHAR(50)
+	PRIMARY KEY(MaHD,MaSach)
+)
+
+
 ALTER TABLE dbo.Sach ADD CONSTRAINT fk_sach FOREIGN KEY (MaTacGia) REFERENCES dbo.TacGia (MaTG)
 ALTER TABLE dbo.Sach ADD CONSTRAINT fk_sack2 FOREIGN KEY (MaTheLoai) REFERENCES dbo.TheLoai(MaTheLoai)
 ALTER TABLE dbo.Sach ADD CONSTRAINT fk_sach3 FOREIGN KEY (MaNXB) REFERENCES dbo.NhaXuatBan (MaNXB)
 ALTER TABLE dbo.NhanVien ADD CONSTRAINT fk_nv FOREIGN KEY (MaCN) REFERENCES dbo.ChiNhanh(MaCN)
 ALTER TABLE dbo.KhachHang ADD CONSTRAINT fk_KH FOREIGN KEY (MaCN) REFERENCES dbo.ChiNhanh(MaCN)
+ALTER TABLE dbo.HoaDon ADD CONSTRAINT fk_HD1 FOREIGN KEY (MaKH) REFERENCES dbo.KhachHang(MaKH)
+ALTER TABLE dbo.HoaDon ADD CONSTRAINT fk_HD2 FOREIGN KEY (MaNV) REFERENCES dbo.NhanVien(MaNV)
+ALTER TABLE dbo.CT_HoaDon ADD CONSTRAINT fk_CTHD1 FOREIGN KEY (MaHD) REFERENCES dbo.HoaDon(MaHD)
+ALTER TABLE dbo.CT_HoaDon ADD CONSTRAINT fk_CTHD2 FOREIGN KEY (MaSach) REFERENCES dbo.Sach(MaSach)
 
 INSERT [dbo].[ChiNhanh] ([MaCN], [TenCN], [DiaChi], [SoDT]) VALUES (N'CN1', N'Chi Nhánh 1', N'Đà Nẵng', 545644)
 INSERT [dbo].[ChiNhanh] ([MaCN], [TenCN], [DiaChi], [SoDT]) VALUES (N'CN2', N'Chi Nhánh 2 ', N'Hồ Chí Minh', 321231)
@@ -87,3 +104,18 @@ INSERT [dbo].[TacGia] ([MaTG], [TenTG], [GhiChu]) VALUES (N'TG3', N'Fumiko', N'D
 INSERT [dbo].[TheLoai] ([MaTheLoai], [TenTheLoai]) VALUES (N'TL1', N'Trinh Thám')
 INSERT [dbo].[TheLoai] ([MaTheLoai], [TenTheLoai]) VALUES (N'TL2', N'Thiếu Nhi')
 INSERT [dbo].[TheLoai] ([MaTheLoai], [TenTheLoai]) VALUES (N'TL3', N'Truyện Dân Gian')
+
+INSERT [dbo].[HoaDon] ([MaHD], [MaKH], [MaNV], [NgayLapHoaDon]) VALUES (N'HD1', N'KH1', N'NV1', CAST(N'2021-12-31' AS Date))
+INSERT [dbo].[HoaDon] ([MaHD], [MaKH], [MaNV], [NgayLapHoaDon]) VALUES (N'HD2', N'KH2', N'NV2', CAST(N'2021-12-31' AS Date))
+INSERT [dbo].[HoaDon] ([MaHD], [MaKH], [MaNV], [NgayLapHoaDon]) VALUES (N'HD3', N'KH1', N'NV3', CAST(N'2021-12-31' AS Date))
+INSERT [dbo].[HoaDon] ([MaHD], [MaKH], [MaNV], [NgayLapHoaDon]) VALUES (N'HD4', N'KH3', N'NV4', CAST(N'2021-12-31' AS Date))
+INSERT [dbo].[HoaDon] ([MaHD], [MaKH], [MaNV], [NgayLapHoaDon]) VALUES (N'HD5', N'KH4', N'NV5', CAST(N'2021-12-31' AS Date))
+
+INSERT [dbo].[CT_HoaDon] ([MaHD], [MaSach]) VALUES (N'HD1', N'MS1')
+INSERT [dbo].[CT_HoaDon] ([MaHD], [MaSach]) VALUES (N'HD1', N'MS3')
+INSERT [dbo].[CT_HoaDon] ([MaHD], [MaSach]) VALUES (N'HD2', N'MS2')
+INSERT [dbo].[CT_HoaDon] ([MaHD], [MaSach]) VALUES (N'HD3', N'MS3')
+INSERT [dbo].[CT_HoaDon] ([MaHD], [MaSach]) VALUES (N'HD4', N'MS1')
+INSERT [dbo].[CT_HoaDon] ([MaHD], [MaSach]) VALUES (N'HD4', N'MS3')
+INSERT [dbo].[CT_HoaDon] ([MaHD], [MaSach]) VALUES (N'HD5', N'MS2')
+INSERT [dbo].[CT_HoaDon] ([MaHD], [MaSach]) VALUES (N'HD5', N'MS3')
