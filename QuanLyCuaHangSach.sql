@@ -66,15 +66,16 @@ CREATE TABLE CT_HoaDon(
 )
 
 
-ALTER TABLE dbo.Sach ADD CONSTRAINT fk_sach FOREIGN KEY (MaTacGia) REFERENCES dbo.TacGia (MaTG)
-ALTER TABLE dbo.Sach ADD CONSTRAINT fk_sack2 FOREIGN KEY (MaTheLoai) REFERENCES dbo.TheLoai(MaTheLoai)
-ALTER TABLE dbo.Sach ADD CONSTRAINT fk_sach3 FOREIGN KEY (MaNXB) REFERENCES dbo.NhaXuatBan (MaNXB)
-ALTER TABLE dbo.NhanVien ADD CONSTRAINT fk_nv FOREIGN KEY (MaCN) REFERENCES dbo.ChiNhanh(MaCN)
+ALTER TABLE dbo.Sach ADD CONSTRAINT fk_sach FOREIGN KEY (MaTacGia) REFERENCES dbo.TacGia (MaTG) ON DELETE CASCADE ON UPDATE CASCADE
+ALTER TABLE dbo.Sach ADD CONSTRAINT fk_sack2 FOREIGN KEY (MaTheLoai) REFERENCES dbo.TheLoai(MaTheLoai) ON DELETE CASCADE ON UPDATE CASCADE 
+ALTER TABLE dbo.Sach ADD CONSTRAINT fk_sach3 FOREIGN KEY (MaNXB) REFERENCES dbo.NhaXuatBan (MaNXB) ON DELETE CASCADE ON UPDATE CASCADE 
+ALTER TABLE dbo.HoaDon ADD CONSTRAINT fk_HD1 FOREIGN KEY (MaKH) REFERENCES dbo.KhachHang(MaKH) ON DELETE CASCADE ON UPDATE CASCADE
+ALTER TABLE dbo.HoaDon ADD CONSTRAINT fk_HD2 FOREIGN KEY (MaNV) REFERENCES dbo.NhanVien(MaNV) ON DELETE CASCADE ON UPDATE CASCADE
+ALTER TABLE dbo.CT_HoaDon ADD CONSTRAINT fk_CTHD1 FOREIGN KEY (MaHD) REFERENCES dbo.HoaDon(MaHD) ON DELETE CASCADE ON UPDATE CASCADE
+ALTER TABLE dbo.CT_HoaDon ADD CONSTRAINT fk_CTHD2 FOREIGN KEY (MaSach) REFERENCES dbo.Sach(MaSach) ON DELETE CASCADE ON UPDATE CASCADE
 ALTER TABLE dbo.KhachHang ADD CONSTRAINT fk_KH FOREIGN KEY (MaCN) REFERENCES dbo.ChiNhanh(MaCN)
-ALTER TABLE dbo.HoaDon ADD CONSTRAINT fk_HD1 FOREIGN KEY (MaKH) REFERENCES dbo.KhachHang(MaKH)
-ALTER TABLE dbo.HoaDon ADD CONSTRAINT fk_HD2 FOREIGN KEY (MaNV) REFERENCES dbo.NhanVien(MaNV)
-ALTER TABLE dbo.CT_HoaDon ADD CONSTRAINT fk_CTHD1 FOREIGN KEY (MaHD) REFERENCES dbo.HoaDon(MaHD)
-ALTER TABLE dbo.CT_HoaDon ADD CONSTRAINT fk_CTHD2 FOREIGN KEY (MaSach) REFERENCES dbo.Sach(MaSach)
+ALTER TABLE dbo.NhanVien ADD CONSTRAINT fk_nv FOREIGN KEY (MaCN) REFERENCES dbo.ChiNhanh(MaCN) 
+
 
 INSERT [dbo].[ChiNhanh] ([MaCN], [TenCN], [DiaChi], [SoDT]) VALUES (N'CN1', N'Chi Nhánh 1', N'Đà Nẵng', 545644)
 INSERT [dbo].[ChiNhanh] ([MaCN], [TenCN], [DiaChi], [SoDT]) VALUES (N'CN2', N'Chi Nhánh 2 ', N'Hồ Chí Minh', 321231)
@@ -86,8 +87,8 @@ INSERT [dbo].[KhachHang] ([MaKH], [TenKH], [DiaChi], [MaCN]) VALUES (N'KH4', N'N
 
 INSERT [dbo].[NhanVien] ([MaNV], [TenNV], [DiaChi], [TenChiNhanh], [MaCN]) VALUES (N'NV1', N'Hà Thị Nga', N'Huế', N'Đà Nẵng', N'CN1')
 INSERT [dbo].[NhanVien] ([MaNV], [TenNV], [DiaChi], [TenChiNhanh], [MaCN]) VALUES (N'NV2', N'Huỳnh Văn Phú', N'Đà Nẵng', N'Hồ Chí Minh', N'CN2')
-INSERT [dbo].[NhanVien] ([MaNV], [TenNV], [DiaChi], [TenChiNhanh], [MaCN]) VALUES (N'NV3', N'Ngô Lê Thủy Tien', N'Đà Nẵng', N'Đà Nẵng', N'CN1')
-INSERT [dbo].[NhanVien] ([MaNV], [TenNV], [DiaChi], [TenChiNhanh], [MaCN]) VALUES (N'NV4', N'Tường Lê', N'Sài Gòn', N'Hồ Chí Minh', N'CN2')
+INSERT [dbo].[NhanVien] ([MaNV], [TenNV], [DiaChi], [TenChiNhanh], [MaCN]) VALUES (N'NV3', N'Ngô Lê Thủy Tiên', N'Đà Nẵng', N'Đà Nẵng', N'CN1')
+INSERT [dbo].[NhanVien] ([MaNV], [TenNV], [DiaChi], [TenChiNhanh], [MaCN]) VALUES (N'NV4', N'Nguyễn Thị Tường Lê', N'Sài Gòn', N'Hồ Chí Minh', N'CN2')
 INSERT [dbo].[NhanVien] ([MaNV], [TenNV], [DiaChi], [TenChiNhanh], [MaCN]) VALUES (N'NV5 ', N'Phạm Thị Uyên', N'Huế', N'Đà Nẵng', N'CN1')
 
 INSERT [dbo].[NhaXuatBan] ([MaNXB], [TenNXB], [DiaChi]) VALUES (N'NXB1', N'Kim Đồng', N'Hà Nội')
