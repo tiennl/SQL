@@ -145,3 +145,15 @@ ALTER TABLE dbo.CT_HoaDon ADD CONSTRAINT fk_CTHD1 FOREIGN KEY (MaHD) REFERENCES 
 ALTER TABLE dbo.CT_HoaDon ADD CONSTRAINT fk_CTHD2 FOREIGN KEY (MaSach) REFERENCES dbo.Sach(MaSach) ON DELETE CASCADE ON UPDATE CASCADE
 ALTER TABLE dbo.NhanVien ADD CONSTRAINT fk_nv FOREIGN KEY (MaCN) REFERENCES dbo.ChiNhanh(MaCN) ON DELETE CASCADE ON UPDATE CASCADE
 ALTER TABLE dbo.KhachHang ADD CONSTRAINT fk_KH FOREIGN KEY (MaCN) REFERENCES dbo.ChiNhanh(MaCN)
+
+--- thuc nghiem
+
+update LINK.QuanLyCuaHangSach.dbo.NhanVien set DiaChi = N'Thái Bình' where MaNV = 'NV5'
+
+insert into LINK.QuanLyCuaHangSach.dbo.NhanVien (MaNV, TenNV, DiaChi, TenChiNhanh, MaCN) values ('NV100', 'Test', 'DN', N'Đà Nẵng', 'CN1')
+
+delete LINK.QuanLyCuaHangSach.dbo.NhanVien where MaNV = 'NV100'
+
+SELECT * FROM LINK.QuanLyCuaHangSach.dbo.NhanVien
+
+
